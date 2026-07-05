@@ -68,7 +68,7 @@ function handleAddHabit() {
         v-for="habit in store.habits"
         :key="habit.id"
         :habit="habit"
-        @toggle="store.toggleHabit"
+        @toggle="store.toggleHabitOnDate"
         @delete="store.deleteHabit"
       />
     </TransitionGroup>
