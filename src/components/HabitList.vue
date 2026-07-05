@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import HabitItem from './HabitItem.vue';
 import { useHabitsStore } from '../stores/habits.ts';
 
@@ -13,20 +13,21 @@ const newHabitName = ref('');
 
 // Template ref: nama variable HARUS SAMA PERSIS dengan atribut ref="..." di template
 // Vue otomatis mengisi ref ini dengan elemen DOM asli setelah komponen ter-mount
-const inputRef = ref<HTMLInputElement | null>(null);
+// const inputRef = ref<HTMLInputElement | null>(null);
 
 function handleAddHabit() {
   store.addHabit(newHabitName.value);
   newHabitName.value = ''; // reset input
   // Setelah nambah habit, fokus balik ke input — pengalaman UX yang lebih baik
-  inputRef.value?.focus();
+  // inputRef.value?.focus();
 }
 
 // onMounted = pastikan DOM sudah benar-benar ada sebelum kita akses .focus()
 // Ini WAJIB — kalau dipanggil sebelum mounted, inputRef.value masih null
-onMounted(() => {
-  inputRef.value?.focus();
-});
+// Tidak perlu lagi inputRef, onMounted, ataupun manual .focus()!
+// onMounted(() => {
+//   inputRef.value?.focus();
+// });
 </script>
 
 <template>
@@ -40,7 +41,7 @@ onMounted(() => {
     <!-- v-model = two-way binding, setara value + onChange digabung jadi satu -->
     <div class="flex gap-2 mb-4">
       <input
-        ref="inputRef"
+        v-focus
         v-model="newHabitName"
         @keyup.enter="handleAddHabit"
         type="text"
