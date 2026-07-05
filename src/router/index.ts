@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import StatsView from '../views/StatsView.vue';
+import FocusView from '../views/FocusView.vue';
 
 const router = createRouter({
   // createWebHistory = pakai clean URL (/stats, bukan /#/stats)
@@ -16,7 +17,12 @@ const router = createRouter({
       path: '/stats',
       name: 'stats',
       component: StatsView,
-    }
+    },
+    {
+      path: '/focus',
+      name: 'focus',
+      component: FocusView,
+    },
   ]
 });
 
