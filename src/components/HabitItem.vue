@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { Habit } from '../types/habit';
+import BaseModal from './BaseModal.vue';
 
 // defineProps = setara props di React function component
 // Ini compiler macro khusus Vue, TIDAK PERLU di-import
@@ -15,12 +17,15 @@ const emit = defineEmits<{
   delete: [id: string]
 }>();
 
+const showConfirm = ref(false);
+
 function handleToggle() {
   emit('toggle', props.habit.id);
 }
 
-function handleDelete() {
+function confirmDelete() {
   emit('delete', props.habit.id);
+  showConfirm.value = false;
 }
 </script>
 
@@ -45,10 +50,27 @@ function handleDelete() {
     </div>
 
     <button
-      @click="handleDelete"
+      @click="showConfirm = true"
       class="text-red-400 hover:text-red-600 text-xs font-medium"
     >
       Hapus
     </button>
+
+    <BaseModal :show="showConfirm" @close="showConfirm = false">
+      <template #header>
+        <h2 class="text-lg font-semibold text-red-600">Hapus Habit?</h2>
+      </template>
+
+      Apakah kamu yakin ingin menghapus "<strong>{{ habit.name }}</strong>"? Tindakan ini tidak bisa dibatalkan.
+
+      <template #footer>
+        <button @click="showConfirm = false" class="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200">
+          Batal
+        </button>
+        <button @click="confirmDelete" class="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700">
+          Ya, Hapus
+        </button>
+      </template>
+    </BaseModal>
   </li>
 </template>
