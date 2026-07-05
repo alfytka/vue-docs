@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import HabitItem from './HabitItem.vue';
-import { useHabits } from '../composables/useHabits.ts';
+import { useHabitsStore } from '../stores/habits.ts';
 
-// Satu baris ini menggantikan semua logic yang tadinya ada di sini
-const { habits, completedCount, totalCount, addHabit, toggleHabit, deleteHabit } = useHabits();
+// cukup ganti nama import & function call, sisanya identik
+const store = useHabitsStore();
 
 // v-model butuh ref biasa untuk input text
 // State lokal untuk input tetap di komponen, bukan di composable
@@ -12,7 +12,7 @@ const { habits, completedCount, totalCount, addHabit, toggleHabit, deleteHabit }
 const newHabitName = ref('');
 
 function handleAddHabit() {
-  addHabit(newHabitName.value);
+  store.addHabit(newHabitName.value);
   newHabitName.value = ''; // reset input
 }
 </script>
@@ -22,7 +22,7 @@ function handleAddHabit() {
     <h1 class="text-2xl font-bold text-gray-800 mb-2">Habit Tracker</h1>
 
     <p class="text-sm text-gray-500 mb-4">
-      {{ completedCount }} dari {{ totalCount }} selesai
+      {{ store.completedCount }} dari {{ store.totalCount }} selesai
     </p>
 
     <!-- v-model = two-way binding, setara value + onChange digabung jadi satu -->
@@ -43,18 +43,18 @@ function handleAddHabit() {
     </div>
 
     <!-- v-if = conditional rendering, setara {condition && <div>} -->
-    <p v-if="habits.length === 0" class="text-gray-400 text-sm text-center py-4">
+    <p v-if="store.habits.length === 0" class="text-gray-400 text-sm text-center py-4">
       Belum ada habit. Tambahkan satu!
     </p>
 
     <!-- v-for = .map() di React, WAJIB pakai :key sama seperti React -->
     <ul v-else class="space-y-2">
       <HabitItem
-        v-for="habit in habits"
+        v-for="habit in store.habits"
         :key="habit.id"
         :habit="habit"
-        @toggle="toggleHabit"
-        @delete="deleteHabit"
+        @toggle="store.toggleHabit"
+        @delete="store.deleteHabit"
       />
     </ul>
   </div>
