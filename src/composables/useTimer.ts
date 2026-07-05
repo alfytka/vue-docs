@@ -3,8 +3,10 @@ import { computed, onUnmounted, ref, watch } from "vue";
 type TimerMode = 'focus' | 'break';
 
 export function useTimer() {
-  const FOCUS_DURATION = 0.50 * 60; // 30 detik
-  const BREAK_DURATION = 0.10 * 60; // 6 detik
+  // const FOCUS_DURATION = 0.50 * 60; // 30 detik
+  // const BREAK_DURATION = 0.10 * 60; // 6 detik
+  const FOCUS_DURATION = 25 * 60; // 25 menit dalam detik
+  const BREAK_DURATION = 10 * 60; // 10 menit dalam detik
 
   const mode = ref<TimerMode>('focus');
   const secondsLeft = ref(FOCUS_DURATION);
