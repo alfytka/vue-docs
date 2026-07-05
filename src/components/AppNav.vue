@@ -20,6 +20,13 @@
       >
         Statistik
       </RouterLink>
+      <RouterLink
+        to="/focus"
+        class="text-sm font-medium text-gray-500 hover:text-indigo-600"
+        active-class="text-indigo-600 font-semibold"
+      >
+        Focus
+      </RouterLink>
     </div>
   </nav>
 </template>
