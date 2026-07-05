@@ -1,15 +1,9 @@
-import { computed } from 'vue';
+import { defineStore } from 'pinia';
+import { useLocalStorage } from '../composables/useLocalStorage';
 import type { Habit } from '../types/habit';
-import { useLocalStorage } from './useLocalStorage';
+import { computed } from 'vue';
 
-// sudah tidak digunakan, fungsi ini dipindah ke stores (pinia)
-export function useHabits() {
-  // a) Before:
-  // const habits = ref<Habit[]>([
-  //   { id: '1', name: 'Baca buku 30 menit', completed: false, createdAt: new Date() },
-  //   { id: '2', name: 'Olahraga pagi', completed: true, createdAt: new Date() },
-  // ]);
-  // b) After: Ganti ref() jadi useLocalStorage(), sisanya TIDAK BERUBAH SAMA SEKALI
+export const useHabitsStore = defineStore('habits', () => {
   const habits = useLocalStorage<Habit[]>('habits', [
     { id: '1', name: 'Baca buku 30 menit', completed: false, createdAt: new Date() },
     { id: '2', name: 'Olahraga pagi', completed: true, createdAt: new Date() },
@@ -21,6 +15,11 @@ export function useHabits() {
   });
 
   const totalCount = computed(() => habits.value.length);
+
+  const completionRate = computed(() => {
+    if (totalCount.value === 0) return 0;
+    return Math.round((completedCount.value / totalCount.value) * 100);
+  })
 
   function addHabit(name: string) {
     if (name.trim() === '') return;
@@ -50,8 +49,9 @@ export function useHabits() {
     habits,
     completedCount,
     totalCount,
+    completionRate,
     addHabit,
     toggleHabit,
     deleteHabit,
   }
-}
+});
