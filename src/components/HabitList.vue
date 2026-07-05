@@ -1,50 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import type { Habit } from '../types/habit';
+import { ref } from 'vue';
 import HabitItem from './HabitItem.vue';
+import { useHabits } from '../composables/useHabits.ts';
 
-// ref() = setState di React, tapi diakses lewat .value di script (bukan di template)
-const habits = ref<Habit[]>([
-  { id: '1', name: 'Baca buku 30 menit', completed: false, createdAt: new Date() },
-  { id: '2', name: 'Olahraga pagi', completed: true, createdAt: new Date() },
-]);
+// Satu baris ini menggantikan semua logic yang tadinya ada di sini
+const { habits, completedCount, totalCount, addHabit, toggleHabit, deleteHabit } = useHabits();
 
 // v-model butuh ref biasa untuk input text
+// State lokal untuk input tetap di komponen, bukan di composable
+// (karena ini murni UI state, bukan business logic)
 const newHabitName = ref('');
 
-// computed() = useMemo, otomatis re-calculate saat dependency (habits) berubah
-const completedCount = computed(() => {
-  return habits.value.filter((h) => h.completed).length;
-});
-
-const totalCount = computed(() => habits.value.length);
-
-function addHabit() {
-  // guard clause
-  if (newHabitName.value.trim() === '') return;
-
-  habits.value.push({
-    id: crypto.randomUUID(),
-    name: newHabitName.value,
-    completed: false,
-    createdAt: new Date(),
-  });
-
+function handleAddHabit() {
+  addHabit(newHabitName.value);
   newHabitName.value = ''; // reset input
-}
-
-function toggleHabit(id: string) {
-  const habit = habits.value.find((h) => h.id === id);
-  if (habit) {
-    habit.completed = !habit.completed;
-    // Perhatikan: di React kamu HARUS bikin object/array baru untuk trigger re-render.
-    // Di Vue, karena reactivity berbasis Proxy, mutasi langsung seperti ini
-    // SUDAH otomatis trigger update UI. Ini beda besar dari React!
-  }
-}
-
-function deleteHabit(id: string) {
-  habits.value = habits.value.filter((h) => h.id !== id);
 }
 </script>
 
@@ -60,13 +29,13 @@ function deleteHabit(id: string) {
     <div class="flex gap-2 mb-4">
       <input
         v-model="newHabitName"
-        @keyup.enter="addHabit"
+        @keyup.enter="handleAddHabit"
         type="text"
         placeholder="Tambah habit baru..."
         class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
       />
       <button
-        @click="addHabit"
+        @click="handleAddHabit"
         class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
       >
         Tambah
