@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import HabitItem from './HabitItem.vue';
 import { useHabitsStore } from '../stores/habits.ts';
 
@@ -11,10 +11,22 @@ const store = useHabitsStore();
 // (karena ini murni UI state, bukan business logic)
 const newHabitName = ref('');
 
+// Template ref: nama variable HARUS SAMA PERSIS dengan atribut ref="..." di template
+// Vue otomatis mengisi ref ini dengan elemen DOM asli setelah komponen ter-mount
+const inputRef = ref<HTMLInputElement | null>(null);
+
 function handleAddHabit() {
   store.addHabit(newHabitName.value);
   newHabitName.value = ''; // reset input
+  // Setelah nambah habit, fokus balik ke input — pengalaman UX yang lebih baik
+  inputRef.value?.focus();
 }
+
+// onMounted = pastikan DOM sudah benar-benar ada sebelum kita akses .focus()
+// Ini WAJIB — kalau dipanggil sebelum mounted, inputRef.value masih null
+onMounted(() => {
+  inputRef.value?.focus();
+});
 </script>
 
 <template>
@@ -28,6 +40,7 @@ function handleAddHabit() {
     <!-- v-model = two-way binding, setara value + onChange digabung jadi satu -->
     <div class="flex gap-2 mb-4">
       <input
+        ref="inputRef"
         v-model="newHabitName"
         @keyup.enter="handleAddHabit"
         type="text"
@@ -48,7 +61,8 @@ function handleAddHabit() {
     </p>
 
     <!-- v-for = .map() di React, WAJIB pakai :key sama seperti React -->
-    <ul v-else class="space-y-2">
+    <!-- Ganti <ul v-else> jadi <TransitionGroup>, tag="ul" bikin Vue render sebagai <ul> -->
+    <TransitionGroup v-if="store.habits.length > 0" tag="ul" name="habit-item" class="space-y-2">
       <HabitItem
         v-for="habit in store.habits"
         :key="habit.id"
@@ -56,6 +70,28 @@ function handleAddHabit() {
         @toggle="store.toggleHabit"
         @delete="store.deleteHabit"
       />
-    </ul>
+    </TransitionGroup>
   </div>
 </template>
+
+<style scoped>
+.habit-item-enter-active,
+.habit-item-leave-active {
+  transition: all 0.3s ease;
+}
+.habit-item-enter-from {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+.habit-item-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+/* Ini KHUSUS TransitionGroup: animasi smooth saat item lain "geser posisi" */
+.habit-item-leave-active {
+  position: absolute;
+}
+.habit-item-move {
+  transition: transform 0.3s ease;
+}
+</style>

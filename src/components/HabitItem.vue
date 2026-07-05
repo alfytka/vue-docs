@@ -19,6 +19,9 @@ const emit = defineEmits<{
 
 const showConfirm = ref(false);
 
+// Type-nya diambil dari instance komponen, InstanceType<typeof BaseModal>
+// const modalRef = ref<InstanceType<typeof BaseModal> | null>(null);
+
 function handleToggle() {
   emit('toggle', props.habit.id);
 }
@@ -27,6 +30,11 @@ function confirmDelete() {
   emit('delete', props.habit.id);
   showConfirm.value = false;
 }
+
+// contoh penggunaan
+// function handleEmergencyClose() {
+//   modalRef.value?.forceClose();
+// }
 </script>
 
 <template>
