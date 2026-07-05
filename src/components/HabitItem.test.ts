@@ -5,8 +5,8 @@ import HabitItem from './HabitItem.vue';
 
 const mockHabit: Habit = {
   id: '1',
-  name: 'Baca buku',
-  completed: false,
+  name: 'Baca buku 30 menit',
+  completedDates: [],
   createdAt: new Date(),
 };
 
@@ -17,7 +17,7 @@ describe('HabitItem', () => {
     })
 
     // Setara: expect(screen.getByText('Baca buku')).toBeInTheDocument() di RTL
-    expect(wrapper.text()).toContain('Baca buku');
+    expect(wrapper.text()).toContain('Baca buku 30 menit');
   });
 
   it('emit event "toggle" dengan id yang benar saat checkbox diklik', async () => {

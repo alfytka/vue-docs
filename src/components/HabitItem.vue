@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import type { Habit } from '../types/habit';
 import BaseModal from './BaseModal.vue';
+import { useHabitsStore } from '../stores/habits.ts';
+import { RouterLink } from 'vue-router';
 
 // defineProps = setara props di React function component
 // Ini compiler macro khusus Vue, TIDAK PERLU di-import
@@ -13,9 +15,12 @@ const props = defineProps<{
 // Setara dengan callback props (onToggle, onDelete) di React,
 // tapi di Vue polanya event-based, bukan function passing
 const emit = defineEmits<{
-  toggle: [id: string]
+  // toggle: [id: string]
   delete: [id: string]
 }>();
+
+const store = useHabitsStore();
+const isCompletedToday = () => store.isCompletedOnDate(props.habit, new Date());
 
 const showConfirm = ref(false);
 
@@ -23,7 +28,8 @@ const showConfirm = ref(false);
 // const modalRef = ref<InstanceType<typeof BaseModal> | null>(null);
 
 function handleToggle() {
-  emit('toggle', props.habit.id);
+  // emit('toggle', props.habit.id);
+  store.toggleHabitOnDate(props.habit.id);
 }
 
 function confirmDelete() {
@@ -42,19 +48,23 @@ function confirmDelete() {
     <div class="flex items-center gap-3">
       <input
         type="checkbox"
-        :checked="habit.completed"
+        :checked="isCompletedToday()"
         @change="handleToggle"
         class="w-4 h-4 accent-indigo-600"
       />
+      <RouterLink :to="`/habit/${habit.id}`" class="text-sm text-gray-700 hover:text-indigo-600 hover:underline">
+        {{ habit.name }}
+      </RouterLink>
+
       <!-- :class binding kondisional, mirip clsx/classnames di React -->
-      <span
-      :class="[
-        'text-sm',
-        habit.completed ? 'line-through text-gray-400' : 'text-gray-700',
-      ]"
+      <!-- <span
+        :class="[
+          'text-sm',
+          habit.completed ? 'line-through text-gray-400' : 'text-gray-700',
+        ]"
       >
       {{ habit.name }}
-      </span>
+      </span> -->
     </div>
 
     <button
