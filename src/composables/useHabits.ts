@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import type { Habit } from '../types/habit';
+import { toDateKey, type Habit } from '../types/habit';
 import { useLocalStorage } from './useLocalStorage';
 
 // sudah tidak digunakan, fungsi ini dipindah ke stores (pinia)
@@ -11,13 +11,14 @@ export function useHabits() {
   // ]);
   // b) After: Ganti ref() jadi useLocalStorage(), sisanya TIDAK BERUBAH SAMA SEKALI
   const habits = useLocalStorage<Habit[]>('habits', [
-    { id: '1', name: 'Baca buku 30 menit', completed: false, createdAt: new Date() },
-    { id: '2', name: 'Olahraga pagi', completed: true, createdAt: new Date() },
+    { id: '1', name: 'Baca buku 30 menit', completedDates: [], createdAt: new Date() },
+    { id: '2', name: 'Olahraga pagi', completedDates: [toDateKey(new Date())], createdAt: new Date() },
   ]);
 
   // computed() = useMemo, otomatis re-calculate saat dependency (habits) berubah
   const completedCount = computed(() => {
-    return habits.value.filter((h) => h.completed).length;
+    const today = toDateKey(new Date());
+    return habits.value.filter((h) => h.completedDates.includes(today)).length;
   });
 
   const totalCount = computed(() => habits.value.length);
@@ -27,20 +28,20 @@ export function useHabits() {
     habits.value.push({
       id: crypto.randomUUID(),
       name,
-      completed: false,
+      completedDates: [],
       createdAt: new Date(),
     });
   }
 
-  function toggleHabit(id: string) {
-    const habit = habits.value.find((h) => h.id === id);
-    if (habit) {
-      habit.completed = !habit.completed;
-      // Perhatikan: di React kamu HARUS bikin object/array baru untuk trigger re-render.
-      // Di Vue, karena reactivity berbasis Proxy, mutasi langsung seperti ini
-      // SUDAH otomatis trigger update UI. Ini beda besar dari React!
-    }
-  }
+  // function toggleHabit(id: string) {
+  //   const habit = habits.value.find((h) => h.id === id);
+  //   if (habit) {
+  //     habit.completed = !habit.completed;
+  //     // Perhatikan: di React kamu HARUS bikin object/array baru untuk trigger re-render.
+  //     // Di Vue, karena reactivity berbasis Proxy, mutasi langsung seperti ini
+  //     // SUDAH otomatis trigger update UI. Ini beda besar dari React!
+  //   }
+  // }
 
   function deleteHabit(id: string) {
     habits.value = habits.value.filter((h) => h.id !== id);
@@ -51,7 +52,7 @@ export function useHabits() {
     completedCount,
     totalCount,
     addHabit,
-    toggleHabit,
+    // toggleHabit,
     deleteHabit,
   }
 }

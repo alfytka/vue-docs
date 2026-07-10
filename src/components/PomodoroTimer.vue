@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useTimer } from '../composables/useTimer';
+import { onBeforeRouteLeave } from 'vue-router';
 
 const {
   mode,
@@ -18,7 +19,24 @@ onMounted(() => {
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
   }
-})
+});
+
+// onBeforeRouteLeave = guard ini yang didefinisikan LANGSUNG di komponent,
+// jalan cuma saat komponen INI yang sedang aktif dan user coba navigasi keluar
+// Setara: useBlocker() di React Router v6.4+, tapi jauh lebih ringkas syntax-nya
+onBeforeRouteLeave((to, from) => {
+  if (isRunning.value && mode.value === 'focus') {
+    const confirmLeave = window.confirm(
+      'Timer fokus masih berjalan. Yakin ingin menginggalkan halaman ini?'
+    );
+    // return false = BATALKAN navigasi, user tetap di halaman
+    // return true / undefined = lanjutkan navigasi seperti biasa
+    if (!confirmLeave) {
+      return false;
+    }
+  }
+  // Kalau timer tidak jalan, atau user konfirmasi "yakin", navigasi lanjut normal
+});
 </script>
 
 <template>
