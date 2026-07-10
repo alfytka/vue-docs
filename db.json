@@ -1,0 +1,29 @@
+{
+  "habits": [
+    {
+      "name": "Coding",
+      "completedDates": [],
+      "createdAt": "2026-07-10T23:26:32.409Z",
+      "id": "pZaplJPD-P0"
+    },
+    {
+      "name": "Belajar 30 menit",
+      "completedDates": [],
+      "createdAt": "2026-07-10T23:30:41.136Z",
+      "id": "ThCu-pxhu_I"
+    },
+    {
+      "name": "Baca buku 30 menit",
+      "completedDates": [],
+      "createdAt": "2026-07-10T23:30:49.860Z",
+      "id": "_t_7kXY6aYA"
+    },
+    {
+      "name": "Jalan kaki",
+      "completedDates": [],
+      "createdAt": "2026-07-10T23:30:56.268Z",
+      "id": "TEk8t83sYXs"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
