@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import HabitItem from './HabitItem.vue';
 import { useHabitsStore } from '../stores/habits.ts';
+import { useHabitFilters } from '../composables/useHabitFilters.ts';
+import HabitFilterBar from './HabitFilterBar.vue';
 
 // cukup ganti nama import & function call, sisanya identik
 const store = useHabitsStore();
@@ -14,6 +16,12 @@ const newHabitName = ref('');
 // Template ref: nama variable HARUS SAMA PERSIS dengan atribut ref="..." di template
 // Vue otomatis mengisi ref ini dengan elemen DOM asli setelah komponen ter-mount
 // const inputRef = ref<HTMLInputElement | null>(null);
+
+// Passing sebagai arrow function supaya tetap reaktif (lihat penjelasan di atas)
+const { filters, filteredHabits, resetFilters } = useHabitFilters(
+  () => store.habits,
+  (habit) => store.getCurrentStreak(habit)
+);
 
 function handleAddHabit() {
   store.addHabit(newHabitName.value);
@@ -61,16 +69,24 @@ function handleAddHabit() {
       </button>
     </div>
 
+    <!-- v-model di sini otomatis "tersambung" ke defineModel di HabitFilterBar -->
+    <HabitFilterBar v-model="filters" />
+
+    <div v-if="store.isLoading" class="text-center py-8">
+      <div class="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto" />
+    </div>
+
     <!-- v-if = conditional rendering, setara {condition && <div>} -->
-    <p v-if="store.habits.length === 0" class="text-gray-400 text-sm text-center py-4">
-      Belum ada habit. Tambahkan satu!
+    <p v-else-if="filteredHabits.length === 0" class="text-gray-400 text-sm text-center py-4">
+      Tidak ada habit yang cocok.
+      <button @click="resetFilters" class="text-indigo-600 underline">Reset filter</button>
     </p>
 
     <!-- v-for = .map() di React, WAJIB pakai :key sama seperti React -->
     <!-- Ganti <ul v-else> jadi <TransitionGroup>, tag="ul" bikin Vue render sebagai <ul> -->
-    <TransitionGroup v-if="store.habits.length > 0" tag="ul" name="habit-item" class="space-y-2">
+    <TransitionGroup v-else tag="ul" name="habit-item" class="space-y-2">
       <HabitItem
-        v-for="habit in store.habits"
+        v-for="habit in filteredHabits"
         :key="habit.id"
         :habit="habit"
         @toggle="store.toggleHabitOnDate"

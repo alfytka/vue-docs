@@ -55,6 +55,7 @@ export const useHabitsStore = defineStore('habits', () => {
 
     const newHabit: Omit<Habit, 'id'> = {
       name,
+      category: 'productivity',
       completedDates: [],
       createdAt: new Date(),
     };
@@ -170,12 +171,14 @@ export const useHabitsStoreOld = defineStore('habits', () => {
     {
       id: '1',
       name: 'Baca buku 30 menit',
+      category: 'productivity',
       completedDates: [],
       createdAt: new Date(),
     },
     {
       id: '2',
       name: 'Olahraga pagi',
+      category: 'health',
       completedDates: [toDateKey(new Date())],
       createdAt: new Date(),
     },
@@ -200,6 +203,7 @@ export const useHabitsStoreOld = defineStore('habits', () => {
     habits.value.push({
       id: crypto.randomUUID(),
       name,
+      category: 'health',
       completedDates: [],
       createdAt: new Date(),
     });
