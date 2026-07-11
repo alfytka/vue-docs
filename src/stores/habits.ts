@@ -75,6 +75,34 @@ export const useHabitsStore = defineStore('habits', () => {
     }
   }
 
+  async function editHabit(
+    id: string,
+    updates: { name: string; category: Habit['category'] },
+  ) {
+    const habit = habits.value.find((h) => h.id === id);
+    if (!habit) return;
+
+    const previous = { name: habit.name, category: habit.category };
+    // Optimistic update, sama pola seperti toggleHabitOnDate sebelumnya
+    habit.name = updates.name;
+    habit.category = updates.category;
+
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error('Gagal menyimpan perubahan habit');
+    } catch (err) {
+      // Rollback
+      habit.name = previous.name;
+      habit.category = previous.category;
+      error.value = err instanceof Error ? err.message : 'Gagal menyimpan perubahan habit';
+      throw err; // re-throw supaya form tahu submit-nya gagal
+    }
+  }
+
   async function toggleHabitOnDate(id: string, date: Date = new Date()) {
     const habit = habits.value.find((h) => h.id === id);
     if (!habit) return;
@@ -157,6 +185,7 @@ export const useHabitsStore = defineStore('habits', () => {
     completionRate,
     fetchHabits,
     addHabit,
+    editHabit,
     toggleHabitOnDate,
     isCompletedOnDate,
     deleteHabit,

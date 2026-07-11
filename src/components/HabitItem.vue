@@ -4,6 +4,8 @@ import type { Habit } from '../types/habit';
 import BaseModal from './BaseModal.vue';
 import { useHabitsStore } from '../stores/habits.ts';
 import { RouterLink } from 'vue-router';
+import type { HabitFormValues } from '../schemas/habitSchema.ts';
+import HabitFormModal from './HabitFormModal.vue';
 
 // defineProps = setara props di React function component
 // Ini compiler macro khusus Vue, TIDAK PERLU di-import
@@ -23,6 +25,7 @@ const store = useHabitsStore();
 const isCompletedToday = () => store.isCompletedOnDate(props.habit, new Date());
 
 const showConfirm = ref(false);
+const showEditModal = ref(false);
 
 // Type-nya diambil dari instance komponen, InstanceType<typeof BaseModal>
 // const modalRef = ref<InstanceType<typeof BaseModal> | null>(null);
@@ -35,6 +38,16 @@ function handleToggle() {
 function confirmDelete() {
   emit('delete', props.habit.id);
   showConfirm.value = false;
+}
+
+async function handleEditSubmit(values: HabitFormValues) {
+  try {
+    await store.editHabit(props.habit.id, values);
+    showEditModal.value = false;
+  } catch {
+    // Error sudah otomatis ditangani & ditampilkan lewat store.error,
+    // di sini cukup JANGAN tutup modal supaya user bisa coba lagi
+  }
 }
 
 // contoh penggunaan
@@ -67,12 +80,27 @@ function confirmDelete() {
       </span> -->
     </div>
 
-    <button
-      @click="showConfirm = true"
-      class="text-red-400 hover:text-red-600 text-xs font-medium"
-    >
-      Hapus
-    </button>
+    <div class="flex gap-3">
+      <button
+        @click="showEditModal = true"
+        class="text-gray-400 hover:text-indigo-600 text-xs font-medium"
+      >
+        Edit
+      </button>
+      <button
+        @click="showConfirm = true"
+        class="text-red-400 hover:text-red-600 text-xs font-medium"
+      >
+        Hapus
+      </button>
+    </div>
+
+    <HabitFormModal
+      :show="showEditModal"
+      :habit="habit"
+      @close="showEditModal = false"
+      @submit="handleEditSubmit"
+    />
 
     <BaseModal :show="showConfirm" @close="showConfirm = false">
       <template #header>
