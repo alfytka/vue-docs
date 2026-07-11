@@ -6,6 +6,7 @@ import HabitItem from './HabitItem.vue';
 const mockHabit: Habit = {
   id: '1',
   name: 'Baca buku 30 menit',
+  category: 'productivity',
   completedDates: [],
   createdAt: new Date(),
 };

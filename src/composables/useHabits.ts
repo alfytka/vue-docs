@@ -11,8 +11,18 @@ export function useHabits() {
   // ]);
   // b) After: Ganti ref() jadi useLocalStorage(), sisanya TIDAK BERUBAH SAMA SEKALI
   const habits = useLocalStorage<Habit[]>('habits', [
-    { id: '1', name: 'Baca buku 30 menit', completedDates: [], createdAt: new Date() },
-    { id: '2', name: 'Olahraga pagi', completedDates: [toDateKey(new Date())], createdAt: new Date() },
+    { id: '1',
+      name: 'Baca buku 30 menit',
+      category: 'productivity',
+      completedDates: [],
+      createdAt: new Date()
+    },
+    { id: '2',
+      name: 'Olahraga pagi',
+      category: 'health',
+      completedDates: [toDateKey(new Date())],
+      createdAt: new Date()
+    },
   ]);
 
   // computed() = useMemo, otomatis re-calculate saat dependency (habits) berubah
@@ -28,6 +38,7 @@ export function useHabits() {
     habits.value.push({
       id: crypto.randomUUID(),
       name,
+      category: 'productivity',
       completedDates: [],
       createdAt: new Date(),
     });

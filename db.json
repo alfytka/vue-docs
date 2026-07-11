@@ -22,7 +22,9 @@
     },
     {
       "name": "Jalan kaki",
-      "completedDates": [],
+      "completedDates": [
+        "2026-07-11"
+      ],
       "createdAt": "2026-07-10T23:30:56.268Z",
       "id": "TEk8t83sYXs"
     }
