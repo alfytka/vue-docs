@@ -2,7 +2,9 @@
   "habits": [
     {
       "name": "Coding",
-      "completedDates": [],
+      "completedDates": [
+        "2026-07-11"
+      ],
       "createdAt": "2026-07-10T23:26:32.409Z",
       "id": "pZaplJPD-P0"
     },
